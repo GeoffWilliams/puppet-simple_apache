@@ -85,40 +85,10 @@ DocumentRoot or just served raw.</p>
 <p><code>simple_apache</code> is somewhat a misnomer its simple if your an
 expert apache admin. Also (and more importantly) the module is not called
 <code>apache</code> which would instantly clash with the
-<code>puppetlabs</code> module of the same name.</p>
-
-<h1 id="label-Apache+paths">Apache paths</h1>
-
-<p>You can adjust base of the paths by setting class parameters.
-<code>AccessLog</code> <code>ErrorLog</code> and <code>DocumentRoot</code>
-can be adjusted on per-host basis</p>
-
-<h2 id="label-Configuration">Configuration</h2>
-
-<p>/etc/httpd/  ├── conf  │ ├── httpd.conf &lt;– main httpd config  │ └──
-magic  ├── conf.d &lt;– unmanaged config files  │ ├── autoindex.conf  │ ├──
-php.conf  │ ├── README  │ ├── userdir.conf  │ └── welcome.conf  ├──
-conf.modules.d &lt;– module configuration files to load  │ ├── 00-base.conf
-│ ├── 00-systemd.conf  │ └── php.conf -&gt;
-/etc/httpd/modules_available.d/php.conf &lt;– symlink to file from git  ├──
-…  ├── modules_available.d &lt;– all known module configs (from git)  │ └──
-php.conf  ├── …  ├── vhosts_available.d &lt;– all known vhost configs (from
-git)  │ ├── beta.megacorp.com.conf  │ ├── dev.megacorp.com.conf  │ └──
-test.megacorp.com.conf  └── vhosts_enabled.d &lt;– edited copies or
-symlinks of files from git  ├── beta.megacorp.com.conf -&gt;
-/etc/httpd/vhosts_available.d/beta.megacorp.com.conf  └──
-test.megacorp.com.conf</p>
-
-<h2 id="label-Document+Root">Document Root</h2>
-
-<p>/var/www/  ├── cgi-bin  ├── html  └── vhosts  └── test.megacorp.com &lt;–
-one directory per vhost based on ServerName  └── index.html</p>
-
-<h2 id="label-Logs">Logs</h2>
-
-<p>/var/log/httpd/  ├── access_log &lt;– log files from main server process 
-├── error_log  ├── test.megacorp.com-access_log &lt;– separate error/access
-log for each vhost  └── test.megacorp.com-error_log</p>
+<code>puppetlabs</code> module of the same name. You can adjust base of the
+paths by setting class parameters. <code>AccessLog</code>
+<code>ErrorLog</code> and <code>DocumentRoot</code> can be adjusted on
+per-host basis</p>
 
   </div>
 </div>
@@ -126,6 +96,60 @@ log for each vhost  └── test.megacorp.com-error_log</p>
   
   <div class="examples">
     <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Configuration directory structure</p>
+</div></p>
+      
+      <pre class="example code"><code>/etc/httpd/
+├── conf
+│   ├── httpd.conf                                              &lt;-- main httpd config
+│   └── magic
+├── conf.d                                                      &lt;-- unmanaged config files
+│   ├── autoindex.conf
+│   ├── php.conf
+│   ├── README
+│   ├── userdir.conf
+│   └── welcome.conf
+├── conf.modules.d                                              &lt;-- module configuration files to load
+│   ├── 00-base.conf
+│   ├── 00-systemd.conf
+│   └── php.conf -&gt; /etc/httpd/modules_available.d/php.conf     &lt;-- symlink to file from git
+├── ...
+├── modules_available.d                                         &lt;-- all known module configs (from git)
+│   └── php.conf
+├── ...
+├── vhosts_available.d                                          &lt;-- all known vhost configs (from git)
+│   ├── beta.megacorp.com.conf
+│   ├── dev.megacorp.com.conf
+│   └── test.megacorp.com.conf
+└── vhosts_enabled.d                                            &lt;-- edited copies or symlinks of files from git
+  ├── beta.megacorp.com.conf -&gt; /etc/httpd/vhosts_available.d/beta.megacorp.com.conf
+  └── test.megacorp.com.conf</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>DocumentRoot directory structure</p>
+</div></p>
+      
+      <pre class="example code"><code>/var/www/
+├── cgi-bin
+├── html
+└── vhosts
+  └── test.megacorp.com                                         &lt;-- one directory per vhost based on ServerName
+    └── index.html</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Log directory structure</p>
+</div></p>
+      
+      <pre class="example code"><code>/var/log/httpd/
+├── access_log                                                  &lt;-- log files from main server process
+├── error_log
+├── test.megacorp.com-access_log                                &lt;-- separate error/access log for each vhost
+└── test.megacorp.com-error_log</code></pre>
     
       
         <p class="example_title"><div class='inline'>
@@ -160,10 +184,24 @@ log for each vhost  └── test.megacorp.com-error_log</p>
       
       <pre class="example code"><code>simple_apache::vhosts_enabled:
   &quot;test.megacorp.com&quot;:
-    docroot: /home/bob/test
+    docroot:
+      path: /home/bob/test
     error_log: /home/bob/test/error.log
     access_log: /home/bob/test/access.log
     log_format: &#39;&quot;%h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-agent}i\&quot;&quot; combined&#39;</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Hiera data to install a vhost with specific docroot permissions</p>
+</div></p>
+      
+      <pre class="example code"><code>simple_apache::vhosts_enabled:
+  &quot;test.megacorp.com&quot;:
+    docroot:
+      path: /home/bob/test
+      mode: &#39;2750&#39;
+      owner: deployuser
+      group: apache</code></pre>
     
       
         <p class="example_title"><div class='inline'>
@@ -509,12 +547,6 @@ compatible)</p>
         <pre class="lines">
 
 
-110
-111
-112
-113
-114
-115
 116
 117
 118
@@ -716,10 +748,23 @@ compatible)</p>
 314
 315
 316
-317</pre>
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 110</span>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 116</span>
 
 class simple_apache(
   String $apache_name,
@@ -841,7 +886,11 @@ class simple_apache(
     $error_logroot = dirname($error_log)
     $access_log = pick(dig($opts, &#39;access_log&#39;), &quot;${logroot}/${key}-access_log&quot;)
     $access_logroot = dirname($access_log)
-    $docroot = pick(dig($opts, &#39;docroot&#39;), &quot;${vhost_dir}/${key}&quot;)
+    $docroot = pick(dig($opts, &#39;docroot&#39;, &#39;path&#39;), &quot;${vhost_dir}/${key}&quot;)
+    $docroot_owner = pick(dig($opts, &#39;docroot&#39;, &#39;owner&#39;), &#39;root&#39;)
+    $docroot_group = pick(dig($opts, &#39;docroot&#39;, &#39;group&#39;), &#39;root&#39;)
+    $docroot_mode = pick(dig($opts, &#39;docroot&#39;, &#39;mode&#39;), &#39;0755&#39;)
+
 
     if ! defined(File[$error_logroot]) {
       file { $error_logroot:
@@ -866,6 +915,9 @@ class simple_apache(
 
     file { $docroot:
       ensure =&gt; directory,
+      owner  =&gt; $docroot_owner,
+      group  =&gt; $docroot_group,
+      mode   =&gt; $docroot_mode,
       notify =&gt; $service_ref,
     }
 
