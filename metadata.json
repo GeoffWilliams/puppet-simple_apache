@@ -1,6 +1,6 @@
 {
   "name": "geoffwilliams-simple_apache",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "geoffwilliams",
   "summary": "Manage apache using puppet with configs checked out from git",
   "license": "Apache-2.0",

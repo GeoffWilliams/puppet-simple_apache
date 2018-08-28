@@ -1,6 +1,6 @@
-# Simple_apache
-#
-# mostly_ drop-in replacement for puppetlabs-apache (where noted) with built-in support for downloading full vhost
+# @summary Apache module giving full text control over configs
+# 
+# _mostly_ drop-in replacement for puppetlabs-apache (where noted) with built-in support for downloading full vhost
 # and module configs from git. vhost definitions can be edited in-place for AccessLog, ErrorLog, DocumentRoot or just
 # served raw.
 #
